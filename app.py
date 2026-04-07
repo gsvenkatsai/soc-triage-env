@@ -47,3 +47,7 @@ def state():
     if env.state is None:
         return {"error": "Environment not initialized. Call /reset first."}
     return env.state_dict().dict()
+
+@app.get("/")
+def root():
+    return {"status": "ok", "env": "soc-triage-env", "endpoints": ["/reset", "/step", "/state"]}
