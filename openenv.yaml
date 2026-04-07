@@ -1,0 +1,96 @@
+name: soc-triage-env
+version: "1.0.0"
+description: >
+  A simulated Security Operations Center (SOC) environment where an AI agent
+  investigates alerts, gathers evidence, and submits a verdict. Models real-world
+  analyst workflows including log pulling, IP reputation checks, asset criticality
+  assessment, alert correlation, and user lookups.
+
+tags:
+  - openenv
+  - security
+  - soc
+  - triage
+  - cybersecurity
+
+tasks:
+  - id: task1_ssh_bruteforce
+    name: SSH Brute Force Detection
+    difficulty: easy
+    description: >
+      A single external IP is hammering SSH on a critical server.
+      The agent must pull logs, query IP reputation, and escalate appropriately.
+    max_steps: 10
+    reward_range: [0.0, 1.0]
+
+  - id: task2_lateral_movement
+    name: Lateral Movement Investigation
+    difficulty: medium
+    description: >
+      Multiple assets show suspicious activity. An internal scanner creates a
+      red herring. The agent must check asset criticality and distinguish real
+      lateral movement from benign scanning before escalating.
+    max_steps: 10
+    reward_range: [0.0, 1.0]
+
+  - id: task3_apt_killchain
+    name: APT Kill Chain
+    difficulty: hard
+    description: >
+      A multi-stage attack spanning phishing, credential theft, and data
+      exfiltration. The agent must correlate alerts across a time window,
+      look up compromised users, and escalate as critical.
+    max_steps: 10
+    reward_range: [0.0, 1.0]
+
+observation_space:
+  type: object
+  fields:
+    alert:
+      type: object
+      description: Alert summary including id, title, severity, timestamp, source_ip, target_asset, description
+    last_action_result:
+      type: string
+      description: Output returned by the most recently executed action
+    available_actions:
+      type: array
+      items: string
+      description: List of valid action strings the agent may submit
+    step_count:
+      type: integer
+      description: Number of steps taken in the current episode
+    context_gathered:
+      type: array
+      items: string
+      description: Accumulated results from all actions taken so far
+
+action_space:
+  type: string
+  description: >
+    A single string command. Valid actions are:
+      pull_logs <source>
+      query_ip_reputation <ip>
+      check_asset_criticality <asset_id>
+      correlate_alerts <window_minutes>
+      lookup_user <username>
+      escalate <reason>
+      escalate_critical <reason>
+      close_false_positive <reason>
+
+reward:
+  type: float
+  range: [0.0, 1.0]
+  description: >
+    Shaped reward. +0.30 for correct verdict, +0.20 for sufficient evidence
+    gathered, +0.10 per relevant investigative action, with penalties for
+    repeated or irrelevant actions.
+
+entry_point: app:app
+api:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
+
+runtime:
+  port: 7860
+  framework: fastapi

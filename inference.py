@@ -44,7 +44,6 @@ MAX_STEPS = 8
 TASK3_REQUIRED_STEPS = [
     "pull_logs email.log",
     "pull_logs endpoint.log",
-    "query_ip_reputation 194.165.16.72",
     "correlate_alerts 120",
 ]
 
@@ -109,12 +108,15 @@ def call_llm(prompt: str) -> str:
 # -------------------------------------------------------
 # TASK 3 FORCED SEQUENCE
 # -------------------------------------------------------
-def get_task3_forced_action(actions_taken: list):
+def get_task3_forced_action(actions_taken: list, obs=None):
     for required in TASK3_REQUIRED_STEPS:
         if required not in actions_taken:
             return required
+    if obs and obs.alert.source_ip:
+        ip_action = f"query_ip_reputation {obs.alert.source_ip}"
+        if ip_action not in actions_taken:
+            return ip_action
     return None
-
 
 # -------------------------------------------------------
 # EPISODE RUNNER
@@ -138,7 +140,7 @@ def run_episode(task_id: int, seed: int = 42):
         step_num += 1
 
         if task_id == 3:
-            forced = get_task3_forced_action(actions_taken)
+            forced = get_task3_forced_action(actions_taken, obs)
             if forced:
                 action = forced
             elif env.state.verdict is None:
