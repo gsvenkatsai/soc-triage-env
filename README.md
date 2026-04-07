@@ -94,15 +94,15 @@ Hybrid agent:
 | ----------- | -------- |
 | Task 1      | 0.72     |
 | Task 2      | 0.65     |
-| Task 3      | 1.00     |
-| **Average** | **0.79** |
+| Task 3      | 0.70     |
+| **Average** | **0.69** |
 
 ---
 
 ## Setup
 
 ```bash
-git clone <your-repo>
+git clone https://github.com/gsvenkatsai/soc-triage-env
 cd soc-triage-env
 python -m venv venv
 source venv/bin/activate
