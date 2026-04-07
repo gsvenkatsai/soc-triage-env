@@ -1,3 +1,14 @@
+---
+title: SOC Triage Env
+emoji: 🛡️
+colorFrom: red
+colorTo: blue
+sdk: docker
+pinned: false
+tags:
+  - openenv
+---
+
 # SOC Alert Triage — OpenEnv Environment
 
 A simulated Security Operations Center (SOC) environment where an AI agent investigates alerts, gathers evidence, and makes security decisions.
