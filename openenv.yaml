@@ -85,7 +85,7 @@ reward:
     gathered, +0.10 per relevant investigative action, with penalties for
     repeated or irrelevant actions.
 
-entry_point: app:app
+entry_point: server.app:main
 api:
   reset: POST /reset
   step: POST /step
