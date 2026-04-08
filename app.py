@@ -12,7 +12,7 @@ env = SOCEnvironment()
 # Request schemas
 # -----------------------------
 class ResetRequest(BaseModel):
-    task_id: int
+    task_id: int = 1
     seed: int = 42
 
 
