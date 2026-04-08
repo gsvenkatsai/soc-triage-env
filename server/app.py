@@ -24,11 +24,14 @@ class StepRequest(BaseModel):
 # Endpoints
 # -----------------------------
 
-@app.post("/reset")
-def reset(req: ResetRequest):
-    obs = env.reset(task_id=req.task_id, seed=req.seed)
-    return obs.dict()
+from typing import Optional
 
+@app.post("/reset")
+def reset(req: Optional[ResetRequest] = None):
+    task_id = req.task_id if req else 1
+    seed = req.seed if req else 42
+    obs = env.reset(task_id=task_id, seed=seed)
+    return obs.dict()
 
 @app.post("/step")
 def step(req: StepRequest):
