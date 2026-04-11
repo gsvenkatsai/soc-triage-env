@@ -36,5 +36,16 @@ docker-compose.override.yml
 outputs/
 logs/
 
-# UV
-uv.lock
+# Git
+.git/
+.gitignore
+
+# Tests and cache
+.pytest_cache/
+tests/
+__pycache__/
+
+# Docs
+*.pdf
+*.md
+!README.md

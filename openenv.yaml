@@ -1,10 +1,17 @@
+spec_version: 1
 name: soc-triage-env
-version: "1.0.0"
+type: space
+runtime: fastapi
+app: server.app:app
+port: 7860
+
 description: >
   A simulated Security Operations Center (SOC) environment where an AI agent
-  investigates alerts, gathers evidence, and submits a verdict. Models real-world
-  analyst workflows including log pulling, IP reputation checks, asset criticality
-  assessment, alert correlation, and user lookups.
+  investigates security alerts, gathers evidence through log analysis and
+  threat intelligence queries, and submits triage verdicts. Models real-world
+  SOC analyst workflows including log pulling, IP reputation checks, asset
+  criticality assessment, alert correlation, user lookups, and containment
+  actions (host isolation, IP blocking).
 
 tags:
   - openenv
@@ -12,6 +19,7 @@ tags:
   - soc
   - triage
   - cybersecurity
+  - alert-triage
 
 tasks:
   - id: task1_ssh_bruteforce
@@ -19,7 +27,8 @@ tasks:
     difficulty: easy
     description: >
       A single external IP is hammering SSH on a critical server.
-      The agent must pull logs, query IP reputation, and escalate appropriately.
+      The agent must pull auth logs, query IP reputation, and
+      escalate appropriately. Clear indicators, single attack vector.
     max_steps: 10
     reward_range: [0.0, 1.0]
 
@@ -27,20 +36,22 @@ tasks:
     name: Lateral Movement Investigation
     difficulty: medium
     description: >
-      Multiple assets show suspicious activity. An internal scanner creates a
-      red herring. The agent must check asset criticality and distinguish real
-      lateral movement from benign scanning before escalating.
-    max_steps: 10
+      Multiple assets show suspicious internal traffic. An authorized
+      vulnerability scanner creates a red herring. The agent must check
+      asset criticality and distinguish real lateral movement from benign
+      scanning before escalating. Requires multi-asset analysis.
+    max_steps: 12
     reward_range: [0.0, 1.0]
 
   - id: task3_apt_killchain
     name: APT Kill Chain
     difficulty: hard
     description: >
-      A multi-stage attack spanning phishing, credential theft, and data
-      exfiltration. The agent must correlate alerts across a time window,
-      look up compromised users, and escalate as critical.
-    max_steps: 10
+      A multi-stage Advanced Persistent Threat attack spanning phishing,
+      credential theft, persistence, and data exfiltration. The agent
+      must correlate alerts across a 2-hour window, inspect 4+ log sources,
+      and escalate as critical. Requires comprehensive investigation.
+    max_steps: 15
     reward_range: [0.0, 1.0]
 
 observation_space:
@@ -48,7 +59,9 @@ observation_space:
   fields:
     alert:
       type: object
-      description: Alert summary including id, title, severity, timestamp, source_ip, target_asset, description
+      description: >
+        Alert summary with fields: alert_id, title, severity (LOW/MEDIUM/HIGH/CRITICAL),
+        timestamp, source_ip, target_asset, description
     last_action_result:
       type: string
       description: Output returned by the most recently executed action
@@ -59,38 +72,51 @@ observation_space:
     step_count:
       type: integer
       description: Number of steps taken in the current episode
+    max_steps:
+      type: integer
+      description: Maximum steps allowed for this task
     context_gathered:
       type: array
       items: string
-      description: Accumulated results from all actions taken so far
+      description: Accumulated results from all investigative actions taken so far
+    done:
+      type: boolean
+      description: Whether the episode has ended
 
 action_space:
   type: string
   description: >
     A single string command. Valid actions are:
-      pull_logs <source>
-      query_ip_reputation <ip>
-      check_asset_criticality <asset_id>
-      correlate_alerts <window_minutes>
-      lookup_user <username>
-      escalate <reason>
-      escalate_critical <reason>
-      close_false_positive <reason>
+      pull_logs <source>                     (auth.log, network.log, endpoint.log, email.log, dns.log, proxy.log)
+      query_ip_reputation <ip>               (check threat intel for an IP)
+      check_asset_criticality <asset_id>     (look up asset details)
+      correlate_alerts <window_minutes>      (find related alerts in time window)
+      lookup_user <username>                 (look up user account)
+      isolate_host <hostname>                (containment: isolate a host)
+      block_ip <ip>                          (containment: block an IP)
+      escalate <reason>                      (verdict: escalate to Tier 2)
+      escalate_critical <reason>             (verdict: critical escalation)
+      close_false_positive <reason>          (verdict: close as false positive)
 
 reward:
   type: float
   range: [0.0, 1.0]
   description: >
-    Shaped reward. +0.30 for correct verdict, +0.20 for sufficient evidence
-    gathered, +0.10 per relevant investigative action, with penalties for
-    repeated or irrelevant actions.
+    Shaped per-step reward with components:
+      - Parameter-aware relevance bonus (+0.05 to +0.10 for relevant actions)
+      - Progressive evidence gathering bonus (+0.05 per new evidence)
+      - Verdict correctness (+0.30 correct, -0.10 to -0.30 wrong)
+      - Evidence quality at verdict (+0.00 to +0.20)
+      - Response quality — keyword matching in escalation reason (+0.00 to +0.10)
+      - Step cost (-0.02 per step)
+      - Penalties for repeated actions (-0.10) and irrelevant actions (-0.05)
+      - Containment bonuses/penalties (+0.10 correct, -0.15 wrong host isolation)
 
 entry_point: server.app:main
 api:
   reset: POST /reset
   step: POST /step
   state: GET /state
-
-runtime:
-  port: 7860
-  framework: fastapi
+  score: POST /score
+  health: GET /health
+  docs: GET /docs

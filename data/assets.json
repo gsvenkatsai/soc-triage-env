@@ -1,0 +1,116 @@
+{
+  "A001": {
+    "asset_id": "A001",
+    "hostname": "web-server-01",
+    "ip": "192.168.1.10",
+    "criticality": "high",
+    "owner": "infra-team",
+    "department": "infrastructure",
+    "os": "ubuntu-22.04",
+    "services": ["nginx", "ssh"],
+    "last_patched": "2024-05-15"
+  },
+  "A002": {
+    "asset_id": "A002",
+    "hostname": "db-server-01",
+    "ip": "192.168.1.20",
+    "criticality": "critical",
+    "owner": "dba-team",
+    "department": "database",
+    "os": "rhel-9",
+    "services": ["postgresql", "ssh"],
+    "last_patched": "2024-05-20",
+    "data_classification": "PII, financial"
+  },
+  "A003": {
+    "asset_id": "A003",
+    "hostname": "dev-workstation-05",
+    "ip": "192.168.1.55",
+    "criticality": "low",
+    "owner": "dev-team",
+    "department": "engineering",
+    "os": "ubuntu-22.04",
+    "services": ["ssh", "docker"],
+    "last_patched": "2024-05-25"
+  },
+  "A004": {
+    "asset_id": "A004",
+    "hostname": "hr-laptop-12",
+    "ip": "192.168.1.88",
+    "criticality": "medium",
+    "owner": "hr-team",
+    "department": "human-resources",
+    "os": "windows-11",
+    "services": ["rdp", "outlook"],
+    "last_patched": "2024-05-10",
+    "data_classification": "PII, employee-records"
+  },
+  "A005": {
+    "asset_id": "A005",
+    "hostname": "vuln-scanner-01",
+    "ip": "192.168.1.99",
+    "criticality": "low",
+    "owner": "security-team",
+    "department": "security",
+    "os": "kali-linux",
+    "services": ["nessus", "nmap"],
+    "last_patched": "2024-05-28",
+    "note": "Authorized vulnerability scanner — generates expected scan traffic"
+  },
+  "A006": {
+    "asset_id": "A006",
+    "hostname": "mail-gateway-01",
+    "ip": "192.168.1.30",
+    "criticality": "high",
+    "owner": "infra-team",
+    "department": "infrastructure",
+    "os": "rhel-9",
+    "services": ["postfix", "amavis"],
+    "last_patched": "2024-05-22"
+  },
+  "A007": {
+    "asset_id": "A007",
+    "hostname": "jump-server-01",
+    "ip": "192.168.1.5",
+    "criticality": "critical",
+    "owner": "infra-team",
+    "department": "infrastructure",
+    "os": "ubuntu-22.04",
+    "services": ["ssh"],
+    "last_patched": "2024-05-30"
+  },
+  "A008": {
+    "asset_id": "A008",
+    "hostname": "file-server-01",
+    "ip": "192.168.1.40",
+    "criticality": "high",
+    "owner": "infra-team",
+    "department": "infrastructure",
+    "os": "windows-server-2022",
+    "services": ["smb", "rdp"],
+    "last_patched": "2024-05-18",
+    "data_classification": "confidential"
+  },
+  "A009": {
+    "asset_id": "A009",
+    "hostname": "ci-runner-03",
+    "ip": "192.168.1.60",
+    "criticality": "low",
+    "owner": "dev-team",
+    "department": "engineering",
+    "os": "ubuntu-22.04",
+    "services": ["docker", "gitlab-runner"],
+    "last_patched": "2024-05-26"
+  },
+  "A010": {
+    "asset_id": "A010",
+    "hostname": "vpn-gateway-01",
+    "ip": "192.168.1.2",
+    "criticality": "critical",
+    "owner": "infra-team",
+    "department": "infrastructure",
+    "os": "pfsense",
+    "services": ["openvpn", "ipsec"],
+    "last_patched": "2024-05-30"
+  }
+}

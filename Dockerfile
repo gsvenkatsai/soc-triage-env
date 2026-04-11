@@ -1,19 +1,29 @@
-# Use stable Python (NOT 3.13)
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy requirements first (for caching)
-COPY requirements.txt .
+# Install system deps
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
+# Copy requirements first (Docker layer caching)
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy entire project
 COPY . .
 
-# Expose port (HF expects 7860)
+# Create non-root user
+RUN useradd -m -u 1000 appuser
+USER appuser
+
+# HF Spaces expects port 7860
 EXPOSE 7860
 
-# Start FastAPI
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:7860/health || exit 1
+
+# Start the server
 CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]
