@@ -42,4 +42,4 @@ class Grader1(BaseGrader):
             0.15 * efficiency,
             4
         )
-        return max(0.0, min(1.0, final))
+        return max(0.001, min(0.999, final))

@@ -46,7 +46,7 @@ class Grader3(BaseGrader):
             0.15 * response,
             4
         )
-        return max(0.0, min(1.0, final))
+        return max(0.001, min(0.999, final))
 
     def _compute_kill_chain_coverage(self, state: SOCState, ground_truth: dict) -> float:
         """
